@@ -1,0 +1,29 @@
+1. Instalar un framework (express)
+    npm init -y
+    npm install dotenv eslint eslint-config-airbnb eslint-config-airbnb-base eslint-plugin-import eslint-plugin-security nodemon --save-dev
+    npm install express --save
+    
+2. Crear un servidor web :8000
+    
+3. API REST
+    
+    app.get('/api/pokemons', (req, res, next) => {
+    const pokemon2 = {
+        name: 'bulbasaur',
+        attacks: ['whip'],
+    }
+    const data = [{
+        name: 'pikachu',
+        attacks: ['rayo', 'impactrueno'],
+    }, pokemon2, {
+        name: 'charmander',
+        attacks: ['fire ball'],
+    }];
+
+    
+    });
+
+    app.listen(8000, () => {
+    console.log('Server running on port 8000');
+    });
+

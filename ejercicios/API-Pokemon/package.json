@@ -1,0 +1,24 @@
+{
+  "name": "API-Pokemon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^6.2.0",
+    "eslint": "^5.14.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-security": "^1.4.0",
+    "nodemon": "^1.18.10"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
