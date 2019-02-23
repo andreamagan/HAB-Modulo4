@@ -1,3 +1,7 @@
+
+
+## Crear una api propia
+
 1. Instalar un framework (express)
     npm init -y
     npm install dotenv eslint eslint-config-airbnb eslint-config-airbnb-base eslint-plugin-import eslint-plugin-security nodemon --save-dev
@@ -6,24 +10,18 @@
 2. Crear un servidor web :8000
     
 3. API REST
-    
-    app.get('/api/pokemons', (req, res, next) => {
-    const pokemon2 = {
-        name: 'bulbasaur',
-        attacks: ['whip'],
-    }
-    const data = [{
-        name: 'pikachu',
-        attacks: ['rayo', 'impactrueno'],
-    }, pokemon2, {
-        name: 'charmander',
-        attacks: ['fire ball'],
-    }];
 
-    
-    });
 
-    app.listen(8000, () => {
-    console.log('Server running on port 8000');
-    });
+## Conectarse a una appi de un tercero
 
+0. Instalamos la libreria de axios para hacer curl. Tambien podemos descargar la librería request
+
+1. El usuario pide datos (req) - curl a nuestro server
+2. De nuestro back hacemos una req a la API de un tercero
+3. Enviamos los datos del tercero al usuario
+
+
+## Query Params
+
+1. Endpoint que reciba "query params"
+2 Devolver los "query params" con un recibido 200 OK

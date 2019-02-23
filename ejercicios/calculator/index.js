@@ -15,7 +15,6 @@ mul(3, 4).then((resultMul) => {
   console.log('errorMul', err);
 });
 
-
 async function startDiv() {
   try {
     const resultDiv = await div(4, 2);
