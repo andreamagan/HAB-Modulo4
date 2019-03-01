@@ -1,8 +1,79 @@
 'use strict';
 
-//bcrypt()
-const uuid = require('uuid');
+const bcrypt = require('bcrypt');
+const uuidV4 = require('uuid/v4');
 const Joi = require('joi');
+const sgMail = require('@sendgrid/mail');
+const mysqlPool = require('../../routes/mysql-pool');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+/**
+ *  TODO: Insert user into MySQL
+ *  hash the password using bcrypt library
+ */
+
+async function insertUserIntoDatabase(email, password) {
+  const securePassword = await bcrypt.hash(password, 10); /* USE BCRYPT TO CIPHER THE PASSWORD */;
+  const uuid = uuidV4();
+  const now = new Date();
+  const createdAt = now.toISOString().substring(0, 19).replace('T', ' ');
+
+  console.log('secure password', securePassword, 'createdAt', createdAt);
+  console.log('uuid', uuid);
+
+  const connection = await mysqlPool.getConnection();
+
+  await connection.query('INSERT INTO users SET ?', {
+    uuid,
+    email,
+    password: securePassword,
+    created_at: createdAt,
+  });
+
+  return uuid;
+}
+
+/**
+ * TODO: CREATE VERIFICATION CODE AND INSERT IT INTO MySQL
+ */
+async function addVerificationCode(uuid) {
+  const verificationCode = uuidV4();
+  const now = new Date();
+  const createdAt = now.toISOString().substring(0, 19).replace('T', ' ');
+  const sqlQuery = 'INSERT INTO users_activation SET ?';
+  const connection = await mysqlPool.getConnection();
+
+  await connection.query(sqlQuery, {
+    user_uuid: uuid,
+    verification_code: verificationCode,
+    created_at: createdAt,
+  });
+
+  connection.release();
+
+  return verificationCode;
+}
+
+/**
+ * TODO: Send email to the user adding the verificationCode in the link
+ */
+// using SendGrid's v3 Node.js Library
+// https://github.com/sendgrid/sendgrid-nodejs
+
+async function sendEmailRegistration(userEmail, verificationCode) {
+  const msg = {
+    to: userEmail,
+    from: 'socialnetwork@yopmail.com',
+    subject: 'Confirm your email',
+    text: 'By clicking on the following link, you are confirming your email address.',
+    html: `To activate your account, <a href="${process.env.HTTP_SERVER_DOMAIN}/api/account/activate?verification_code=${verificationCode}">click here</a>`,
+  };
+  const data = await sgMail.send(msg);
+
+  return data;
+}
+
 
 async function validateSchema(payload) {
   /**
@@ -18,10 +89,14 @@ async function validateSchema(payload) {
     // email: rules.email,
     // password: rules.password,
     // fullName: rules.fullName,
+
+    email: Joi.string().email({ minDomainAtoms: 2 }).required(),
+    password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
   };
 
   return Joi.validate(payload, schema);
 }
+
 
 async function create(req, res, next) {
   const accountData = { ...req.body };
@@ -34,45 +109,25 @@ async function create(req, res, next) {
     await validateSchema(accountData);
   } catch (e) {
     // Create validation error
+    return res.status(400).send(e);
   }
 
   const {
     email,
     password,
-    fullName,
   } = accountData;
 
   try {
-    /**
-     * TODO: Insert user into MySQL
-     *  hash the password using bcrypt library
-     */
-    const securePassword = 'TODO' /* USE BCRYPT TO CIPHER THE PASSWORD */;
-
-    /**
-     * TODO: Insert user into mysql and get the user uuid
-     */
-
-    /**
-     * TODO: CREATE VERIFICATION CODE AND INSERT IT INTO MySQL
-     */
-    const verificationCode = 'TODO: use uuid library to generate a uuid version 4';
-
-    /**
-     * TODO: Tell user the account was created
-     */
+    const uuid = await insertUserIntoDatabase(email, password);
     res.status(204).json();
 
-    // send email
     try {
-      /**
-       * Send email to the user adding the verificationCode in the link
-       */
+      const verificationCode = await addVerificationCode(uuid);
+      await sendEmailRegistration(email, verificationCode);
     } catch (e) {
-      console.error('Sengrid error', e);
+      console.error('Sendgrid error', e);
     }
   } catch (e) {
-    // create error
     next(e);
   }
 }
