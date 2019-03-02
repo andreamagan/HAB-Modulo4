@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const uuidV4 = require('uuid/v4');
 const Joi = require('joi');
 const sgMail = require('@sendgrid/mail');
-const mysqlPool = require('../../routes/mysql-pool');
+const UserModel = require('../models/user-model');
+const mysqlPool = require('../../databases/mysql-pool');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -34,6 +35,7 @@ async function insertUserIntoDatabase(email, password) {
   return uuid;
 }
 
+
 /**
  * TODO: CREATE VERIFICATION CODE AND INSERT IT INTO MySQL
  */
@@ -53,6 +55,30 @@ async function addVerificationCode(uuid) {
   connection.release();
 
   return verificationCode;
+}
+
+async function createUserProfile(uuid) {
+  const userProfileData = {
+    uuid,
+    avatarUrl: null,
+    fullName: null,
+    friends: [],
+    preferences: {
+      isPublicProfile: false,
+      linkedIn: null,
+      twitter: null,
+      github: null,
+      description: null,
+    },
+  };
+
+  try {
+    const userCreated = await UserModel.create(userProfileData);
+
+    console.log(userCreated);
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 /**
@@ -120,6 +146,8 @@ async function create(req, res, next) {
   try {
     const uuid = await insertUserIntoDatabase(email, password);
     res.status(204).json();
+
+    await createUserProfile(uuid);
 
     try {
       const verificationCode = await addVerificationCode(uuid);

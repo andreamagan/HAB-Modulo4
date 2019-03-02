@@ -1,6 +1,6 @@
 'use strict';
 
-const mysqlPool = require('../../routes/mysql-pool');
+const mysqlPool = require('../../databases/mysql-pool');
 
 
 async function activate(req, res, next) {
