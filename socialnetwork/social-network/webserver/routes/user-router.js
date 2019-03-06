@@ -11,4 +11,8 @@ const router = express.Router();
 router.get('/user', checkJwtToken, getUserProfile);
 router.put('/user', checkJwtToken, updateUserProfile);
 
+router.post('/user/avatar', checkJwtToken, (req, res, next) => {
+  res.status(204).send();
+});
+
 module.exports = router;

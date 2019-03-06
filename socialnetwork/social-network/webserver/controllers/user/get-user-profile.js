@@ -17,7 +17,7 @@ async function getUserProfile(req, res, next) {
    */
 
   try {
-    const userDataProfile = await UserModel.find({ uuid: claims.uuid });
+    const userDataProfile = await UserModel.find({ uuid: claims.uuid }, '-_id -__v').lean();
     console.log(userDataProfile);
     return res.status(200).send(userDataProfile);
   } catch (e) {
