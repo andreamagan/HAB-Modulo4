@@ -23,6 +23,7 @@ async function validate(payload) {
     }),
   };
 
+
   return Joi.validate(payload, schema);
 }
 

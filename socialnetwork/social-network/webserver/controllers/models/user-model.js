@@ -21,6 +21,15 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.index(
+  {
+    fullName: 'text',
+    'preferences.linkedIn': 'text',
+    'preferences.twitter': 'text',
+    'preferences.github': 'text',
+  },
+);
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
