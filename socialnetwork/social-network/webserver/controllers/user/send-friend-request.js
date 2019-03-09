@@ -45,9 +45,8 @@ async function sendFriendRequest(req, res, next) {
         confirmAt: null,
         uuid: claims.uuid,
       },
-    }
+    },
   };
-
 
   try {
     const result = await UserModel.findOneAndUpdate(filter, update);
