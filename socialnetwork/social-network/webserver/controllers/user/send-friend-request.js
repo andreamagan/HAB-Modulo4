@@ -40,9 +40,9 @@ async function sendFriendRequest(req, res, next) {
   const update = {
     $push: {
       friends: {
-        createAt: Date.now(),
-        rejectAt: null,
-        confirmAt: null,
+        createdAt: Date.now(),
+        rejectedAt: null,
+        confirmedAt: null,
         uuid: claims.uuid,
       },
     },

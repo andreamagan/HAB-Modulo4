@@ -23,18 +23,17 @@ async function addConfirmedFriend(friendUuid, me) {
   const updateFriend = {
     $push: {
       friends: {
-        createAt: now,
-        confirmAt: now,
+        createdAt: now,
+        confirmedAt: now,
         rejectedAt: null,
         uuid: me,
       },
     },
   };
 
-  const insertMeInFriendArr = await UserModel.findOneAndUpdate(filterFriend, updateFriend, { rawResult: true });
-  console.log(insertMeInFriendArr);
+  await UserModel.findOneAndUpdate(filterFriend, updateFriend, { rawResult: true });
 
-  //TODO: edge case, eliminar peticiones anteriores si se hizo una peticion de uno a dos y de dos a uno cuando alguien confirme
+  //edge case, eliminar peticiones anteriores si se hizo una petición de uno a dos y de dos a uno cuando alguien confirme
 
   const deleteOp = {
     $pull: {
@@ -73,7 +72,6 @@ async function acceptFriendRequest(req, res, next) {
 
   try {
     const result = await UserModel.findOneAndUpdate(filter, update, { rawResult: true });
-    console.log(result);
 
     await acceptFriendRequest(friendUuid, me);
 
