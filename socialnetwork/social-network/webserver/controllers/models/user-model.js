@@ -9,7 +9,12 @@ const userSchema = new Schema({
     type: String,
     unique: true,
   },
-  friends: [],
+  friends: [{
+    createdAt: Date,
+    confirmedAt: Date,
+    rejectedAt: Date,
+    uuid: String,
+  }],
   avatarUrl: String,
   fullName: String,
   preferences: {
