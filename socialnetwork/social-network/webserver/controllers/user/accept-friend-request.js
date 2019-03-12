@@ -3,6 +3,8 @@
 const Joi = require('joi');
 const UserModel = require('../models/user-model')
 
+const now = Date.now();
+
 async function validate(payload) {
   const schema = {
     friendUuid: Joi.string().guid({
@@ -13,8 +15,6 @@ async function validate(payload) {
 }
 
 async function addConfirmedFriend(friendUuid, me) {
-
-  const now = Date.now();
 
   const filterFriend = {
     uuid: friendUuid,
@@ -61,19 +61,17 @@ async function acceptFriendRequest(req, res, next) {
   const filter = {
     uuid: me,
     'friends.uuid': friendUuid,
-    'friedns.confiermedAt': null,
+    'friends.confiermedAt': null,
   };
 
-
-
   const update = {
-    $set: { "friends.$.confirmedAt": now, }
+    $set: { 'friends.$.confirmedAt': now, }
   };
 
   try {
     const result = await UserModel.findOneAndUpdate(filter, update, { rawResult: true });
 
-    await acceptFriendRequest(friendUuid, me);
+    await addConfirmedFriend(friendUuid, me);
 
     return res.status(200).send();
   } catch (e) {

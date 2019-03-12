@@ -25,7 +25,6 @@ async function searchUsers(req, res, next) {
     return res.status(400).send(e);
   }
 
-
   const op = {
     $text: {
       $search: textToFind,
